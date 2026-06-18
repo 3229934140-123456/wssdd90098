@@ -2,6 +2,8 @@ export type EmotionType = 'positive' | 'neutral' | 'negative';
 
 export type RiskLevel = 'low' | 'medium' | 'high';
 
+export type ProcessingStatus = 'unprocessed' | 'processing' | 'handled';
+
 export interface VideoData {
   id: string;
   accountId: string;
@@ -58,6 +60,7 @@ export interface AlertData {
   negativeCount: number;
   growthRate: number;
   createTime: string;
+  triggerTime: string;
   briefContent: string;
 }
 

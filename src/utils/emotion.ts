@@ -1,4 +1,31 @@
-import { EmotionType, RiskLevel } from '@/types';
+import { EmotionType, RiskLevel, ProcessingStatus } from '@/types';
+
+export const getProcessingStatusLabel = (status: ProcessingStatus): string => {
+  const labels: Record<ProcessingStatus, string> = {
+    unprocessed: '未处理',
+    processing: '处理中',
+    handled: '已安抚'
+  };
+  return labels[status];
+};
+
+export const getProcessingStatusColor = (status: ProcessingStatus): string => {
+  const colors: Record<ProcessingStatus, string> = {
+    unprocessed: '#F53F3F',
+    processing: '#FF7D00',
+    handled: '#00B42A'
+  };
+  return colors[status];
+};
+
+export const getProcessingStatusBgColor = (status: ProcessingStatus): string => {
+  const colors: Record<ProcessingStatus, string> = {
+    unprocessed: 'rgba(245, 63, 63, 0.1)',
+    processing: 'rgba(255, 125, 0, 0.1)',
+    handled: 'rgba(0, 180, 42, 0.1)'
+  };
+  return colors[status];
+};
 
 export const getEmotionColor = (emotion: EmotionType): string => {
   const colors: Record<EmotionType, string> = {

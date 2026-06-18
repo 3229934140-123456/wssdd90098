@@ -1,38 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, ScrollView, Button } from '@tarojs/components';
 import Taro, { useRouter, useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import EmotionChart from '@/components/EmotionChart';
-import { VideoData, EmotionAnalysis } from '@/types';
+import { VideoData, EmotionAnalysis, ProcessingStatus } from '@/types';
 import { getVideoById } from '@/data/videos';
 import { getEmotionAnalysis } from '@/data/comments';
-import { getEmotionScoreColor, getEmotionTemperatureLabel, formatCount } from '@/utils/emotion';
+import { getEmotionScoreColor, getEmotionTemperatureLabel, formatCount, getProcessingStatusLabel, getProcessingStatusColor, getProcessingStatusBgColor } from '@/utils/emotion';
+import { processingStore } from '@/store/processing';
 
 type TabType = 'praise' | 'complaint' | 'misunderstanding';
+
+const statusCycle: ProcessingStatus[] = ['unprocessed', 'processing', 'handled'];
+const statusNextLabel: Record<ProcessingStatus, string> = {
+  unprocessed: '标记为处理中',
+  processing: '标记为已安抚',
+  handled: '重新标记为未处理'
+};
 
 const VideoDetailPage: React.FC = () => {
   const router = useRouter();
   const [video, setVideo] = useState<VideoData | null>(null);
   const [analysis, setAnalysis] = useState<EmotionAnalysis | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('praise');
-  const [loading, setLoading] = useState(true);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const id = router.params.id as string;
-    console.log('[VideoDetail] 加载视频详情:', id);
-    loadData(id);
-  }, [router.params.id]);
+    const unsubscribe = processingStore.subscribe(() => {
+      setTick(t => t + 1);
+    });
+    return unsubscribe;
+  }, []);
 
-  useDidShow(() => {
-    const id = router.params.id as string;
-    if (id) {
-      loadData(id);
-    }
-  });
-
-  const loadData = async (id: string) => {
-    setLoading(true);
+  const loadData = useCallback(async (id: string) => {
     try {
       const videoData = getVideoById(id);
       if (videoData) {
@@ -45,10 +46,22 @@ const VideoDetailPage: React.FC = () => {
     } catch (error) {
       console.error('[VideoDetail] 加载失败:', error);
       Taro.showToast({ title: '加载失败', icon: 'error' });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const id = router.params.id as string;
+    console.log('[VideoDetail] 加载视频详情:', id);
+    loadData(id);
+  }, [router.params.id, loadData]);
+
+  useDidShow(() => {
+    const id = router.params.id as string;
+    if (id) {
+      loadData(id);
+      setTick(t => t + 1);
+    }
+  });
 
   const handleGoReply = () => {
     console.log('[VideoDetail] 跳转到回复辅助');
@@ -57,6 +70,15 @@ const VideoDetailPage: React.FC = () => {
 
   const handleBack = () => {
     Taro.navigateBack();
+  };
+
+  const handleStatusToggle = () => {
+    if (!video) return;
+    const currentStatus = processingStore.getVideoStatus(video.id);
+    const currentIdx = statusCycle.indexOf(currentStatus);
+    const nextStatus = statusCycle[(currentIdx + 1) % statusCycle.length];
+    processingStore.setVideoStatus(video.id, nextStatus);
+    Taro.showToast({ title: `已${getProcessingStatusLabel(nextStatus)}`, icon: 'success' });
   };
 
   if (!video || !analysis) {
@@ -70,10 +92,13 @@ const VideoDetailPage: React.FC = () => {
   const scoreColor = getEmotionScoreColor(video.emotionScore);
   const tempLabel = getEmotionTemperatureLabel(video.emotionScore);
   const pointerLeft = Math.max(0, Math.min(100, video.emotionScore));
+  const videoStatus = processingStore.getVideoStatus(video.id);
+  const pendingCount = processingStore.getPendingNegativeCount(video.id);
+  const totalNegativeComments = analysis.concentratedComplaints.reduce((sum, g) => sum + g.count, 0);
 
   const tabs: { key: TabType; label: string; icon: string; count: number }[] = [
     { key: 'praise', label: '典型好评', icon: '👍', count: analysis.typicalPraises.length },
-    { key: 'complaint', label: '集中吐槽', icon: '🔥', count: analysis.concentratedComplaints.length },
+    { key: 'complaint', label: '集中吐槽', icon: '🔥', count: totalNegativeComments },
     { key: 'misunderstanding', label: '疑似误解', icon: '❓', count: analysis.suspectedMisunderstandings.length }
   ];
 
@@ -89,12 +114,35 @@ const VideoDetailPage: React.FC = () => {
               onError={(e) => console.error('[VideoDetail] 封面加载失败:', e.detail)}
             />
             <View className={styles.videoMeta}>
-              <Text className={styles.title}>{video.title}</Text>
+              <View className={styles.titleRow}>
+                <Text className={styles.title}>{video.title}</Text>
+                <View
+                  className={styles.statusTag}
+                  style={{
+                    color: getProcessingStatusColor(videoStatus),
+                    backgroundColor: getProcessingStatusBgColor(videoStatus)
+                  }}
+                >
+                  {getProcessingStatusLabel(videoStatus)}
+                </View>
+              </View>
               <View className={styles.stats}>
                 <Text className={styles.statItem}>👁 {formatCount(video.viewCount)}</Text>
                 <Text className={styles.statItem}>👍 {formatCount(video.likeCount)}</Text>
                 <Text className={styles.statItem}>💬 {formatCount(video.commentCount)}</Text>
                 <Text className={styles.statItem}>🔄 {formatCount(video.shareCount)}</Text>
+              </View>
+              <View className={styles.pendingBar}>
+                <Text className={styles.pendingLabel}>待处理负面评论</Text>
+                <View className={styles.pendingProgressWrap}>
+                  <View
+                    className={styles.pendingProgress}
+                    style={{ width: `${totalNegativeComments > 0 ? (pendingCount / totalNegativeComments) * 100 : 0}%` }}
+                  />
+                </View>
+                <Text className={styles.pendingCount}>
+                  {pendingCount}/{totalNegativeComments}
+                </Text>
               </View>
             </View>
           </View>
@@ -226,6 +274,9 @@ const VideoDetailPage: React.FC = () => {
       <View className={styles.actionBar}>
         <Button className={classNames(styles.actionBtn, styles.backBtn)} onClick={handleBack}>
           返回
+        </Button>
+        <Button className={classNames(styles.actionBtn, styles.statusBtn)} onClick={handleStatusToggle}>
+          {statusNextLabel[videoStatus]}
         </Button>
         <Button className={classNames(styles.actionBtn, styles.replyBtn)} onClick={handleGoReply}>
           去回复

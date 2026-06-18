@@ -4,7 +4,6 @@ import Taro from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import { mockAccounts } from '@/data/videos';
-import { formatCount } from '@/utils/emotion';
 
 const MinePage: React.FC = () => {
   const currentAccount = mockAccounts[0];

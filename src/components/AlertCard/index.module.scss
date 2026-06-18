@@ -26,6 +26,14 @@
   border-left-color: $color-risk-low;
 }
 
+.handled {
+  opacity: 0.7;
+
+  .description, .stats, .keywords {
+    opacity: 0.85;
+  }
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -38,13 +46,28 @@
   min-width: 0;
 }
 
+.tagRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
 .levelTag {
   display: inline-block;
   padding: $spacing-xs $spacing-sm;
   border-radius: $radius-sm;
   font-size: $font-size-xs;
   font-weight: $font-weight-medium;
-  margin-bottom: $spacing-sm;
+  margin-bottom: 0;
+}
+
+.statusTag {
+  display: inline-block;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
 }
 
 .levelHigh {
@@ -172,4 +195,10 @@
   background: $color-bg-hover;
   color: $color-text-primary;
   border: 1rpx solid $color-border;
+}
+
+.statusBtn {
+  background: linear-gradient(135deg, rgba(255, 125, 0, 0.9) 0%, rgba(255, 163, 64, 0.9) 100%);
+  color: $color-text-white;
+  flex: 1.1;
 }

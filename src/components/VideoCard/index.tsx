@@ -4,15 +4,19 @@ import Taro from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import EmotionIndicator from '@/components/EmotionIndicator';
-import { VideoData } from '@/types';
-import { getGrowthRateColor, formatCount, getEmotionScoreColor } from '@/utils/emotion';
+import { VideoData, ProcessingStatus } from '@/types';
+import { formatCount, getEmotionScoreColor, getProcessingStatusLabel, getProcessingStatusColor, getProcessingStatusBgColor } from '@/utils/emotion';
+import { processingStore } from '@/store/processing';
 
 interface VideoCardProps {
   video: VideoData;
+  processingStatus?: ProcessingStatus;
   onClick?: (video: VideoData) => void;
 }
 
 const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
+  const status = processingStore.getVideoStatus(video.id);
+
   const handleClick = () => {
     console.log('[VideoCard] 点击视频:', video.id);
     if (onClick) {
@@ -34,7 +38,18 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onClick }) => {
           onError={(e) => console.error('[VideoCard] 图片加载失败:', e.detail)}
         />
         <View className={styles.titleSection}>
-          <Text className={styles.title}>{video.title}</Text>
+          <View className={styles.titleRow}>
+            <Text className={styles.title}>{video.title}</Text>
+            <View
+              className={styles.statusTag}
+              style={{
+                color: getProcessingStatusColor(status),
+                backgroundColor: getProcessingStatusBgColor(status)
+              }}
+            >
+              {getProcessingStatusLabel(status)}
+            </View>
+          </View>
           <View className={styles.meta}>
             <Text>{video.publishTime}</Text>
             <Text>👁 {formatCount(video.viewCount)}</Text>

@@ -32,6 +32,14 @@
   flex-direction: column;
   justify-content: space-between;
   min-width: 0;
+  gap: $spacing-sm;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-sm;
 }
 
 .title {
@@ -39,6 +47,53 @@
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
   @include text-ellipsis-multi(2);
+  flex: 1;
+}
+
+.statusTag {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.pendingBar {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm;
+  background: rgba(245, 63, 63, 0.05);
+  border-radius: $radius-md;
+}
+
+.pendingLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.pendingProgressWrap {
+  flex: 1;
+  height: 8rpx;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.pendingProgress {
+  height: 100%;
+  background: linear-gradient(90deg, $color-emotion-negative 0%, $color-emotion-neutral 100%);
+  border-radius: 4rpx;
+  transition: width $transition-base;
+}
+
+.pendingCount {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-emotion-negative;
+  flex-shrink: 0;
 }
 
 .stats {
@@ -332,4 +387,10 @@
   background: $color-bg-hover;
   color: $color-text-primary;
   border: 1rpx solid $color-border;
+}
+
+.statusBtn {
+  background: linear-gradient(135deg, rgba(255, 125, 0, 0.9) 0%, rgba(255, 163, 64, 0.9) 100%);
+  color: $color-text-white;
+  flex: 1.2;
 }

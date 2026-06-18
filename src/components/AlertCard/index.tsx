@@ -3,16 +3,18 @@ import { View, Text, Button } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
-import { AlertData } from '@/types';
-import { getRiskLevelLabel } from '@/utils/emotion';
+import { AlertData, ProcessingStatus } from '@/types';
+import { getRiskLevelLabel, getProcessingStatusLabel, getProcessingStatusColor, getProcessingStatusBgColor } from '@/utils/emotion';
 
 interface AlertCardProps {
   alert: AlertData;
   onForward?: (alert: AlertData) => void;
   onView?: (alert: AlertData) => void;
+  processingStatus?: ProcessingStatus;
+  onStatusChange?: (status: ProcessingStatus) => void;
 }
 
-const AlertCard: React.FC<AlertCardProps> = ({ alert, onForward, onView }) => {
+const AlertCard: React.FC<AlertCardProps> = ({ alert, onForward, onView, processingStatus, onStatusChange }) => {
   const handleForward = async () => {
     console.log('[AlertCard] 转发提醒:', alert.id);
     try {
@@ -36,6 +38,14 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onForward, onView }) => {
     }
   };
 
+  const handleCycleStatus = () => {
+    if (!onStatusChange || !processingStatus) return;
+    const order: ProcessingStatus[] = ['unprocessed', 'processing', 'handled'];
+    const currentIndex = order.indexOf(processingStatus);
+    const nextStatus = order[(currentIndex + 1) % order.length];
+    onStatusChange(nextStatus);
+  };
+
   const levelClass = alert.level === 'high' ? styles.high
     : alert.level === 'medium' ? styles.medium
     : styles.low;
@@ -48,13 +58,28 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onForward, onView }) => {
     : alert.level === 'medium' ? styles.mediumValue
     : styles.lowValue;
 
+  const isHandled = processingStatus === 'handled';
+
   return (
-    <View className={classNames(styles.container, levelClass)}>
+    <View className={classNames(styles.container, levelClass, isHandled && styles.handled)}>
       <View className={styles.header}>
         <View className={styles.left}>
-          <Text className={classNames(styles.levelTag, levelTagClass)}>
-            {getRiskLevelLabel(alert.level)}
-          </Text>
+          <View className={styles.tagRow}>
+            <Text className={classNames(styles.levelTag, levelTagClass)}>
+              {getRiskLevelLabel(alert.level)}
+            </Text>
+            {processingStatus && (
+              <Text
+                className={styles.statusTag}
+                style={{
+                  color: getProcessingStatusColor(processingStatus),
+                  background: getProcessingStatusBgColor(processingStatus)
+                }}
+              >
+                {getProcessingStatusLabel(processingStatus)}
+              </Text>
+            )}
+          </View>
           <Text className={styles.title}>{alert.title}</Text>
           <Text className={styles.videoTitle}>作品：{alert.videoTitle}</Text>
         </View>
@@ -91,6 +116,14 @@ const AlertCard: React.FC<AlertCardProps> = ({ alert, onForward, onView }) => {
         <Button className={classNames(styles.actionBtn, styles.forwardBtn)} onClick={handleForward}>
           转发简报
         </Button>
+        {onStatusChange && (
+          <Button
+            className={classNames(styles.actionBtn, styles.statusBtn)}
+            onClick={handleCycleStatus}
+          >
+            切换状态
+          </Button>
+        )}
       </View>
     </View>
   );

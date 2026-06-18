@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import classNames from 'classnames';
 import styles from './index.module.scss';
-import { CommentData } from '@/types';
-import { getEmotionLabel, getCategoryLabel } from '@/utils/emotion';
+import { CommentData, ProcessingStatus } from '@/types';
+import { getEmotionLabel, getCategoryLabel, getProcessingStatusLabel, getProcessingStatusColor, getProcessingStatusBgColor } from '@/utils/emotion';
 
 interface CommentItemProps {
   comment: CommentData;
@@ -11,6 +11,7 @@ interface CommentItemProps {
   isSelected?: boolean;
   onSelect?: (comment: CommentData) => void;
   onClick?: (comment: CommentData) => void;
+  processingStatus?: ProcessingStatus;
 }
 
 const CommentItem: React.FC<CommentItemProps> = ({
@@ -18,7 +19,8 @@ const CommentItem: React.FC<CommentItemProps> = ({
   selectable = false,
   isSelected = false,
   onSelect,
-  onClick
+  onClick,
+  processingStatus
 }) => {
   const handleClick = () => {
     if (selectable && onSelect) {
@@ -31,7 +33,7 @@ const CommentItem: React.FC<CommentItemProps> = ({
 
   return (
     <View
-      className={classNames(styles.container, isSelected && styles.selected)}
+      className={classNames(styles.container, isSelected && styles.selected, processingStatus === 'handled' && styles.handled)}
       onClick={handleClick}
     >
       {selectable && (
@@ -57,6 +59,17 @@ const CommentItem: React.FC<CommentItemProps> = ({
             <Text className={styles.categoryTag}>
               {getCategoryLabel(comment.category)}
             </Text>
+            {processingStatus && (
+              <Text
+                className={styles.statusTag}
+                style={{
+                  color: getProcessingStatusColor(processingStatus),
+                  background: getProcessingStatusBgColor(processingStatus)
+                }}
+              >
+                {getProcessingStatusLabel(processingStatus)}
+              </Text>
+            )}
           </View>
         </View>
         <Text className={styles.text}>{comment.content}</Text>

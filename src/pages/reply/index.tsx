@@ -5,29 +5,40 @@ import classNames from 'classnames';
 import styles from './index.module.scss';
 import CommentItem from '@/components/CommentItem';
 import ReplySuggestion from '@/components/ReplySuggestion';
-import { CommentData, ReplyTemplate, EmotionType, AccountInfo } from '@/types';
+import { CommentData, ReplyTemplate, EmotionType, AccountInfo, ProcessingStatus } from '@/types';
 import { mockComments, generateReplySuggestions } from '@/data/comments';
 import { getVideosByAccount } from '@/data/videos';
 import { accountStore } from '@/store/account';
-const RefreshControl = (props: any) => null;
+import { processingStore } from '@/store/processing';
+import { getProcessingStatusColor } from '@/utils/emotion';
+const RefreshControl = (_props: any) => null;
 
-type FilterType = 'all' | EmotionType | 'complaint' | 'praise';
+type EmotionFilter = 'all' | EmotionType | 'complaint' | 'praise';
+type StatusFilter = 'all' | ProcessingStatus;
 
 const ReplyPage: React.FC = () => {
   const [comments, setComments] = useState<CommentData[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState<FilterType>('all');
+  const [emotionFilter, setEmotionFilter] = useState<EmotionFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [suggestions, setSuggestions] = useState<ReplyTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<AccountInfo>(accountStore.getCurrentAccount());
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = accountStore.subscribe((account) => {
+    const unsubAccount = accountStore.subscribe((account) => {
       setCurrentAccount(account);
       loadData(account.id);
     });
-    return unsubscribe;
+    const unsubProcessing = processingStore.subscribe(() => {
+      setTick(t => t + 1);
+    });
+    return () => {
+      unsubAccount();
+      unsubProcessing();
+    };
   }, []);
 
   const loadData = useCallback((accountId?: string) => {
@@ -56,6 +67,7 @@ const ReplyPage: React.FC = () => {
 
   useDidShow(() => {
     loadData();
+    setTick(t => t + 1);
   });
 
   usePullDownRefresh(() => {
@@ -63,10 +75,14 @@ const ReplyPage: React.FC = () => {
   });
 
   const filteredComments = comments.filter(c => {
-    if (filter === 'all') return true;
-    if (filter === 'complaint') return c.category === 'complaint';
-    if (filter === 'praise') return c.category === 'praise';
-    return c.emotionType === filter;
+    const emotionMatch = (() => {
+      if (emotionFilter === 'all') return true;
+      if (emotionFilter === 'complaint') return c.category === 'complaint';
+      if (emotionFilter === 'praise') return c.category === 'praise';
+      return c.emotionType === emotionFilter;
+    })();
+    const statusMatch = statusFilter === 'all' || processingStore.getCommentStatus(c.id) === statusFilter;
+    return emotionMatch && statusMatch;
   });
 
   const filteredSelectedIds = new Set(
@@ -113,12 +129,32 @@ const ReplyPage: React.FC = () => {
   const handleUseReply = (content: string) => {
     console.log('[ReplyPage] 使用回复:', content);
     Taro.showModal({
-      title: '确认使用',
-      content: '确定使用此回复内容吗？',
+      title: '确认使用并标记已处理',
+      content: `将对选中的 ${filteredSelectedIds.size} 条评论标记为已处理，确定使用此回复内容吗？`,
       success: (res) => {
         if (res.confirm) {
           Taro.setClipboardData({ data: content });
-          Taro.showToast({ title: '已复制', icon: 'success' });
+          processingStore.markCommentsHandled([...filteredSelectedIds]);
+          Taro.showToast({ title: '已复制并标记处理', icon: 'success' });
+          setSelectedIds(new Set());
+        }
+      }
+    });
+  };
+
+  const handleMarkHandled = () => {
+    if (filteredSelectedIds.size === 0) {
+      Taro.showToast({ title: '请先选择评论', icon: 'none' });
+      return;
+    }
+    Taro.showModal({
+      title: '确认标记',
+      content: `确定将选中的 ${filteredSelectedIds.size} 条评论标记为已处理？`,
+      success: (res) => {
+        if (res.confirm) {
+          processingStore.markCommentsHandled([...filteredSelectedIds]);
+          Taro.showToast({ title: '已标记为已处理', icon: 'success' });
+          setSelectedIds(new Set());
         }
       }
     });
@@ -130,10 +166,12 @@ const ReplyPage: React.FC = () => {
     if (contents.some(c => c.includes('续航'))) return '续航';
     if (contents.some(c => c.includes('价格') || c.includes('贵'))) return '价格';
     if (contents.some(c => c.includes('投诉') || c.includes('维权'))) return '售后问题';
+    if (contents.some(c => c.includes('过敏') || c.includes('刺激'))) return '过敏问题';
+    if (contents.some(c => c.includes('没效果') || c.includes('智商税'))) return '效果问题';
     return '此问题';
   };
 
-  const filters: { key: FilterType; label: string }[] = [
+  const emotionFilters: { key: EmotionFilter; label: string }[] = [
     { key: 'all', label: '全部' },
     { key: 'negative', label: '负面' },
     { key: 'complaint', label: '吐槽' },
@@ -142,15 +180,35 @@ const ReplyPage: React.FC = () => {
     { key: 'praise', label: '好评' }
   ];
 
+  const statusFilters: { key: StatusFilter; label: string }[] = [
+    { key: 'all', label: '全部状态' },
+    { key: 'unprocessed', label: '未处理' },
+    { key: 'processing', label: '处理中' },
+    { key: 'handled', label: '已处理' }
+  ];
+
   return (
     <View className={styles.page}>
       <View className={styles.header}>
         <ScrollView scrollX className={styles.filterBar} showScrollbar={false}>
-          {filters.map(f => (
+          {emotionFilters.map(f => (
             <View
               key={f.key}
-              className={classNames(styles.filterItem, filter === f.key && styles.filterActive)}
-              onClick={() => setFilter(f.key)}
+              className={classNames(styles.filterItem, emotionFilter === f.key && styles.filterActive)}
+              onClick={() => setEmotionFilter(f.key)}
+            >
+              {f.label}
+            </View>
+          ))}
+        </ScrollView>
+
+        <ScrollView scrollX className={styles.filterBar} showScrollbar={false}>
+          {statusFilters.map(f => (
+            <View
+              key={f.key}
+              className={classNames(styles.filterItemSmall, statusFilter === f.key && styles.filterActive)}
+              onClick={() => setStatusFilter(f.key)}
+              style={statusFilter === f.key && f.key !== 'all' ? { background: getProcessingStatusColor(f.key as ProcessingStatus) } : {}}
             >
               {f.label}
             </View>
@@ -172,24 +230,30 @@ const ReplyPage: React.FC = () => {
       <View className={styles.content}>
         <ScrollView
           scrollY
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={loadData}
-              title='加载中...'
-            />
-          }
+          {...({
+            refreshControl: (
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={loadData}
+                title='加载中...'
+              />
+            )
+          } as any)}
         >
           {filteredComments.length > 0 ? (
-            filteredComments.map(comment => (
-              <CommentItem
-                key={comment.id}
-                comment={comment}
-                selectable
-                isSelected={selectedIds.has(comment.id)}
-                onSelect={handleSelect}
-              />
-            ))
+            filteredComments.map(comment => {
+              const commentStatus = processingStore.getCommentStatus(comment.id);
+              return (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  selectable
+                  isSelected={selectedIds.has(comment.id)}
+                  onSelect={handleSelect}
+                  processingStatus={commentStatus}
+                />
+              );
+            })
           ) : (
             <View className={styles.empty}>
               <Text>暂无评论数据</Text>
@@ -217,7 +281,14 @@ const ReplyPage: React.FC = () => {
           <Text>已选 <Text className={styles.bottomCount}>{filteredSelectedIds.size}</Text> 条</Text>
         </View>
         <Button
-          className={styles.generateBtn}
+          className={classNames(styles.actionBtn, styles.markBtn)}
+          disabled={filteredSelectedIds.size === 0}
+          onClick={handleMarkHandled}
+        >
+          标记已处理
+        </Button>
+        <Button
+          className={classNames(styles.actionBtn, styles.generateBtn)}
           disabled={filteredSelectedIds.size === 0}
           onClick={handleGenerate}
         >

@@ -43,6 +43,21 @@
   font-weight: $font-weight-medium;
 }
 
+.filterItemSmall {
+  @include scroll-x-item(auto);
+  padding: $spacing-xs $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
 .selectedInfo {
   display: flex;
   justify-content: space-between;
@@ -131,4 +146,29 @@
   &:disabled {
     opacity: 0.5;
   }
+}
+
+.actionBtn {
+  @include button-reset;
+  height: $button-height-lg;
+  padding: 0 $spacing-lg;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.markBtn {
+  background: linear-gradient(135deg, rgba(0, 180, 42, 0.95) 0%, rgba(50, 205, 100, 0.95) 100%);
+  color: $color-text-white;
+  flex-shrink: 0;
 }

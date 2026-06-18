@@ -77,6 +77,21 @@
   }
 }
 
+.filterItemSmall {
+  @include scroll-x-item(auto);
+  padding: $spacing-xs $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
 .filterActive {
   background: $color-primary;
   color: $color-text-white;

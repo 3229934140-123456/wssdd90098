@@ -2,28 +2,38 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
 import classNames from 'classnames';
-const RefreshControl = (props: any) => null;
+const RefreshControl = (_props: any) => null;
 import styles from './index.module.scss';
 import VideoCard from '@/components/VideoCard';
-import { VideoData, AccountInfo, EmotionType } from '@/types';
+import { VideoData, AccountInfo, EmotionType, ProcessingStatus } from '@/types';
 import { getVideosByAccount, mockAccounts } from '@/data/videos';
 import { formatCount } from '@/utils/emotion';
 import { accountStore } from '@/store/account';
+import { processingStore } from '@/store/processing';
 
-type FilterType = 'all' | EmotionType;
+type EmotionFilter = 'all' | EmotionType;
+type StatusFilter = 'all' | ProcessingStatus;
 
 const HomePage: React.FC = () => {
   const [currentAccount, setCurrentAccount] = useState<AccountInfo>(accountStore.getCurrentAccount());
   const [videos, setVideos] = useState<VideoData[]>([]);
-  const [filter, setFilter] = useState<FilterType>('all');
+  const [emotionFilter, setEmotionFilter] = useState<EmotionFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [loading, setLoading] = useState(false);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = accountStore.subscribe((account) => {
+    const unsubAccount = accountStore.subscribe((account) => {
       setCurrentAccount(account);
     });
-    return unsubscribe;
+    const unsubProcessing = processingStore.subscribe(() => {
+      setTick(t => t + 1);
+    });
+    return () => {
+      unsubAccount();
+      unsubProcessing();
+    };
   }, []);
 
   const loadData = useCallback(() => {
@@ -48,6 +58,7 @@ const HomePage: React.FC = () => {
   useDidShow(() => {
     console.log('[HomePage] 页面显示');
     loadData();
+    setTick(t => t + 1);
   });
 
   usePullDownRefresh(() => {
@@ -56,12 +67,13 @@ const HomePage: React.FC = () => {
   });
 
   const filteredVideos = videos.filter(v => {
-    if (filter === 'all') return true;
-    return v.emotionLabel === filter;
+    const emotionMatch = emotionFilter === 'all' || v.emotionLabel === emotionFilter;
+    const statusMatch = statusFilter === 'all' || processingStore.getVideoStatus(v.id) === statusFilter;
+    return emotionMatch && statusMatch;
   });
 
-  const negativeCount = videos.filter(v => v.emotionLabel === 'negative').length;
   const highRiskCount = videos.filter(v => v.negativeGrowthRate >= 40).length;
+  const unprocessedCount = videos.filter(v => processingStore.getVideoStatus(v.id) === 'unprocessed').length;
 
   const handleAccountClick = () => {
     console.log('[HomePage] 点击账号选择');
@@ -75,11 +87,18 @@ const HomePage: React.FC = () => {
     Taro.showToast({ title: `已切换到${account.name}`, icon: 'none' });
   };
 
-  const filters: { key: FilterType; label: string }[] = [
+  const emotionFilters: { key: EmotionFilter; label: string }[] = [
     { key: 'all', label: '全部作品' },
     { key: 'negative', label: '负面预警' },
     { key: 'neutral', label: '中性待观察' },
     { key: 'positive', label: '正面反馈' }
+  ];
+
+  const statusFilters: { key: StatusFilter; label: string }[] = [
+    { key: 'all', label: '全部状态' },
+    { key: 'unprocessed', label: '未处理' },
+    { key: 'processing', label: '处理中' },
+    { key: 'handled', label: '已安抚' }
   ];
 
   return (
@@ -135,11 +154,23 @@ const HomePage: React.FC = () => {
         )}
 
         <ScrollView scrollX className={styles.filterBar} showScrollbar={false}>
-          {filters.map(f => (
+          {emotionFilters.map(f => (
             <View
               key={f.key}
-              className={classNames(styles.filterItem, filter === f.key && styles.filterActive)}
-              onClick={() => setFilter(f.key)}
+              className={classNames(styles.filterItem, emotionFilter === f.key && styles.filterActive)}
+              onClick={() => setEmotionFilter(f.key)}
+            >
+              {f.label}
+            </View>
+          ))}
+        </ScrollView>
+
+        <ScrollView scrollX className={styles.filterBar} showScrollbar={false}>
+          {statusFilters.map(f => (
+            <View
+              key={f.key}
+              className={classNames(styles.filterItemSmall, statusFilter === f.key && styles.filterActive)}
+              onClick={() => setStatusFilter(f.key)}
             >
               {f.label}
             </View>
@@ -150,8 +181,8 @@ const HomePage: React.FC = () => {
       <View className={styles.content}>
         <View className={styles.summary}>
           <View className={styles.summaryCard}>
-            <Text className={styles.summaryValue} style={{ color: '#F53F3F' }}>{negativeCount}</Text>
-            <Text className={styles.summaryLabel}>负面预警</Text>
+            <Text className={styles.summaryValue} style={{ color: '#F53F3F' }}>{unprocessedCount}</Text>
+            <Text className={styles.summaryLabel}>待处理</Text>
           </View>
           <View className={styles.summaryCard}>
             <Text className={styles.summaryValue} style={{ color: '#FF7D00' }}>{highRiskCount}</Text>
@@ -166,13 +197,15 @@ const HomePage: React.FC = () => {
         <ScrollView
           scrollY
           className={styles.list}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={loadData}
-              title='加载中...'
-            />
-          }
+          {...({
+            refreshControl: (
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={loadData}
+                title='加载中...'
+              />
+            )
+          } as any)}
         >
           {filteredVideos.length > 0 ? (
             filteredVideos.map(video => (
@@ -180,7 +213,7 @@ const HomePage: React.FC = () => {
             ))
           ) : (
             <View className={styles.empty}>
-              <Text>暂无{filter === 'all' ? '' : filters.find(f => f.key === filter)?.label}作品</Text>
+              <Text>暂无符合条件的作品</Text>
             </View>
           )}
         </ScrollView>

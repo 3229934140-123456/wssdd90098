@@ -20,6 +20,22 @@
   background: rgba(22, 93, 255, 0.05);
 }
 
+.handled {
+  opacity: 0.65;
+
+  &.selected {
+    opacity: 1;
+  }
+}
+
+.statusTag {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-sm;
+  font-size: 20rpx;
+  font-weight: $font-weight-medium;
+  flex-shrink: 0;
+}
+
 .checkbox {
   width: 40rpx;
   height: 40rpx;
