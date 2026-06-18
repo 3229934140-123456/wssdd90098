@@ -7,15 +7,23 @@ import VideoCard from '@/components/VideoCard';
 import { VideoData, AccountInfo, EmotionType } from '@/types';
 import { getVideosByAccount, mockAccounts } from '@/data/videos';
 import { formatCount } from '@/utils/emotion';
+import { accountStore } from '@/store/account';
 
 type FilterType = 'all' | EmotionType;
 
 const HomePage: React.FC = () => {
-  const [currentAccount, setCurrentAccount] = useState<AccountInfo>(mockAccounts[0]);
+  const [currentAccount, setCurrentAccount] = useState<AccountInfo>(accountStore.getCurrentAccount());
   const [videos, setVideos] = useState<VideoData[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
   const [loading, setLoading] = useState(false);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = accountStore.subscribe((account) => {
+      setCurrentAccount(account);
+    });
+    return unsubscribe;
+  }, []);
 
   const loadData = useCallback(() => {
     console.log('[HomePage] 加载数据，账号:', currentAccount.id);
@@ -61,7 +69,7 @@ const HomePage: React.FC = () => {
 
   const handleAccountSelect = (account: AccountInfo) => {
     console.log('[HomePage] 切换账号:', account.id);
-    setCurrentAccount(account);
+    accountStore.setCurrentAccount(account);
     setShowAccountPicker(false);
     Taro.showToast({ title: `已切换到${account.name}`, icon: 'none' });
   };

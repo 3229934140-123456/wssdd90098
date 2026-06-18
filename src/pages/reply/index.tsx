@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, Button, RefreshControl } from '@tarojs/components';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import CommentItem from '@/components/CommentItem';
 import ReplySuggestion from '@/components/ReplySuggestion';
-import { CommentData, ReplyTemplate, EmotionType } from '@/types';
+import { CommentData, ReplyTemplate, EmotionType, AccountInfo } from '@/types';
 import { mockComments, generateReplySuggestions } from '@/data/comments';
+import { getVideosByAccount } from '@/data/videos';
+import { accountStore } from '@/store/account';
 
 type FilterType = 'all' | EmotionType | 'complaint' | 'praise';
 
@@ -17,12 +19,27 @@ const ReplyPage: React.FC = () => {
   const [suggestions, setSuggestions] = useState<ReplyTemplate[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [currentAccount, setCurrentAccount] = useState<AccountInfo>(accountStore.getCurrentAccount());
 
-  const loadData = useCallback(() => {
-    console.log('[ReplyPage] 加载评论数据');
+  useEffect(() => {
+    const unsubscribe = accountStore.subscribe((account) => {
+      setCurrentAccount(account);
+      loadData(account.id);
+    });
+    return unsubscribe;
+  }, []);
+
+  const loadData = useCallback((accountId?: string) => {
+    const id = accountId || currentAccount.id;
+    console.log('[ReplyPage] 加载评论数据, 账号:', id);
     setLoading(true);
     try {
-      setComments(mockComments);
+      const videos = getVideosByAccount(id);
+      const videoIds = videos.map(v => v.id);
+      const accountComments = mockComments.filter(c => videoIds.includes(c.videoId));
+      setComments(accountComments);
+      setSelectedIds(new Set());
+      setShowSuggestions(false);
     } catch (error) {
       console.error('[ReplyPage] 数据加载失败:', error);
       Taro.showToast({ title: '加载失败', icon: 'error' });
@@ -30,11 +47,15 @@ const ReplyPage: React.FC = () => {
       setLoading(false);
       Taro.stopPullDownRefresh();
     }
-  }, []);
+  }, [currentAccount]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useDidShow(() => {
+    loadData();
+  });
 
   usePullDownRefresh(() => {
     loadData();

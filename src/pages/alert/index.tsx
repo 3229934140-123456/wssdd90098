@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, RefreshControl, Button } from '@tarojs/components';
-import Taro, { usePullDownRefresh } from '@tarojs/taro';
+import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import AlertCard from '@/components/AlertCard';
-import { AlertData, RiskLevel } from '@/types';
+import { AlertData, RiskLevel, AccountInfo } from '@/types';
 import { getAlerts } from '@/data/alerts';
+import { accountStore } from '@/store/account';
 
 type FilterType = 'all' | RiskLevel;
 
@@ -15,12 +16,22 @@ const AlertPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showBrief, setShowBrief] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState<AlertData | null>(null);
+  const [currentAccount, setCurrentAccount] = useState<AccountInfo>(accountStore.getCurrentAccount());
 
-  const loadData = useCallback(() => {
-    console.log('[AlertPage] 加载风险提醒');
+  useEffect(() => {
+    const unsubscribe = accountStore.subscribe((account) => {
+      setCurrentAccount(account);
+      loadData(account.id);
+    });
+    return unsubscribe;
+  }, []);
+
+  const loadData = useCallback((accountId?: string) => {
+    const id = accountId || currentAccount.id;
+    console.log('[AlertPage] 加载风险提醒, 账号:', id);
     setLoading(true);
     try {
-      const data = getAlerts();
+      const data = getAlerts(id);
       setAlerts(data);
     } catch (error) {
       console.error('[AlertPage] 数据加载失败:', error);
@@ -29,11 +40,15 @@ const AlertPage: React.FC = () => {
       setLoading(false);
       Taro.stopPullDownRefresh();
     }
-  }, []);
+  }, [currentAccount]);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useDidShow(() => {
+    loadData();
+  });
 
   usePullDownRefresh(() => {
     loadData();
