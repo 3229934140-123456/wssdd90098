@@ -1,0 +1,95 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  padding: $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.barItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.barLabel {
+  width: 80rpx;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.barContainer {
+  flex: 1;
+  height: 32rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+  position: relative;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: $radius-round;
+  transition: width $transition-slow ease;
+}
+
+.barValue {
+  width: 80rpx;
+  text-align: right;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  flex-shrink: 0;
+}
+
+.positive {
+  background: $color-emotion-positive;
+  color: $color-emotion-positive;
+}
+
+.neutral {
+  background: $color-emotion-neutral;
+  color: $color-emotion-neutral;
+}
+
+.negative {
+  background: $color-emotion-negative;
+  color: $color-emotion-negative;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-lg;
+  margin-top: $spacing-lg;
+  padding-top: $spacing-lg;
+  border-top: 1rpx solid $color-divider;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.legendDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+}

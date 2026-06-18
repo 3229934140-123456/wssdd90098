@@ -1,0 +1,335 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.videoHeader {
+  background: $color-bg-card;
+  padding: $spacing-lg $page-padding;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.videoInfo {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
+}
+
+.cover {
+  width: 240rpx;
+  height: 180rpx;
+  border-radius: $radius-lg;
+  flex-shrink: 0;
+}
+
+.videoMeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis-multi(2);
+}
+
+.stats {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.statItem {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.emotionScore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba(22, 93, 255, 0.05) 0%, rgba(22, 93, 255, 0.1) 100%);
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-md;
+}
+
+.emotionValue {
+  font-size: 72rpx;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-xs;
+}
+
+.emotionLabel {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-md;
+}
+
+.emotionThermometer {
+  width: 100%;
+  height: 24rpx;
+  background: linear-gradient(90deg, $color-emotion-negative 0%, $color-emotion-neutral 50%, $color-emotion-positive 100%);
+  border-radius: $radius-round;
+  position: relative;
+  margin-bottom: $spacing-xs;
+}
+
+.emotionPointer {
+  position: absolute;
+  top: 50%;
+  width: 32rpx;
+  height: 32rpx;
+  background: $color-bg-card;
+  border: 4rpx solid $color-text-primary;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: $shadow-card;
+  transition: left $transition-base ease;
+}
+
+.emotionScale {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.chartSection {
+  margin: 0 $page-padding $spacing-md;
+}
+
+.tabs {
+  display: flex;
+  background: $color-bg-card;
+  margin: 0 $page-padding $spacing-md;
+  border-radius: $radius-lg;
+  padding: $spacing-xs;
+  box-shadow: $shadow-card;
+}
+
+.tabItem {
+  flex: 1;
+  padding: $spacing-md;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.tabActive {
+  background: $color-primary;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.content {
+  padding: 0 $page-padding $spacing-xl;
+}
+
+.section {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.sectionIcon {
+  font-size: $font-size-lg;
+}
+
+.praiseItem {
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.praiseHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.praiseUser {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.praiseContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+}
+
+.complaintGroup {
+  margin-bottom: $spacing-lg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.complaintHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.complaintKeyword {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.keywordTag {
+  padding: $spacing-xs $spacing-sm;
+  background: $color-tag-bg-negative;
+  color: $color-emotion-negative;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  border-radius: $radius-sm;
+}
+
+.complaintCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.complaintExamples {
+  padding-left: $spacing-md;
+  border-left: 3rpx solid $color-emotion-negative;
+}
+
+.complaintItem {
+  padding: $spacing-sm 0;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+
+  &:not(:last-child) {
+    border-bottom: 1rpx dashed $color-divider;
+  }
+}
+
+.misunderstandingItem {
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.misunderstandingHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.misunderstandingTag {
+  padding: 4rpx 12rpx;
+  background: $color-tag-bg-warning;
+  color: $color-emotion-neutral;
+  font-size: $font-size-xs;
+  border-radius: $radius-sm;
+}
+
+.misunderstandingUser {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.misunderstandingContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  margin-bottom: $spacing-xs;
+}
+
+.misunderstandingHint {
+  font-size: $font-size-xs;
+  color: $color-warning;
+  background: $color-tag-bg-warning;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  display: inline-block;
+}
+
+.empty {
+  text-align: center;
+  padding: $spacing-xl * 2;
+  color: $color-text-tertiary;
+  font-size: $font-size-sm;
+}
+
+.actionBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: $spacing-md;
+  z-index: 100;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.replyBtn {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+}
+
+.backBtn {
+  background: $color-bg-hover;
+  color: $color-text-primary;
+  border: 1rpx solid $color-border;
+}

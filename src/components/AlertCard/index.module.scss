@@ -1,0 +1,175 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-risk-high;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.995);
+  }
+}
+
+.high {
+  border-left-color: $color-risk-high;
+}
+
+.medium {
+  border-left-color: $color-risk-medium;
+}
+
+.low {
+  border-left-color: $color-risk-low;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $spacing-md;
+}
+
+.left {
+  flex: 1;
+  min-width: 0;
+}
+
+.levelTag {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  margin-bottom: $spacing-sm;
+}
+
+.levelHigh {
+  background: $color-tag-bg-negative;
+  color: $color-risk-high;
+}
+
+.levelMedium {
+  background: $color-tag-bg-warning;
+  color: $color-risk-medium;
+}
+
+.levelLow {
+  background: $color-tag-bg-positive;
+  color: $color-risk-low;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+  @include text-ellipsis-multi(2);
+}
+
+.videoTitle {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
+
+.time {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+  margin-left: $spacing-md;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  margin-bottom: $spacing-md;
+  @include text-ellipsis-multi(2);
+}
+
+.stats {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.statItem {
+  flex: 1;
+  text-align: center;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-xs;
+}
+
+.statValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+}
+
+.highValue {
+  color: $color-risk-high;
+}
+
+.mediumValue {
+  color: $color-risk-medium;
+}
+
+.lowValue {
+  color: $color-risk-low;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.keywordTag {
+  padding: $spacing-xs $spacing-sm;
+  background: $color-tag-bg-negative;
+  color: $color-emotion-negative;
+  font-size: $font-size-xs;
+  border-radius: $radius-sm;
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.forwardBtn {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.viewBtn {
+  background: $color-bg-hover;
+  color: $color-text-primary;
+  border: 1rpx solid $color-border;
+}

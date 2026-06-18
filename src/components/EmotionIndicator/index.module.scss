@@ -1,0 +1,48 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.thermometer {
+  width: 100%;
+  height: 16rpx;
+  background: linear-gradient(90deg, $color-emotion-negative 0%, $color-emotion-neutral 50%, $color-emotion-positive 100%);
+  border-radius: $radius-round;
+  position: relative;
+  overflow: hidden;
+}
+
+.pointer {
+  position: absolute;
+  top: 50%;
+  width: 24rpx;
+  height: 24rpx;
+  background: $color-bg-card;
+  border: 4rpx solid $color-text-primary;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: $shadow-card;
+  transition: left $transition-base ease;
+}
+
+.label {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.score {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.tempLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}

@@ -1,0 +1,46 @@
+// ============================================
+// 主题配色变量
+// ============================================
+
+// 品牌主题色：专业蓝，代表可信赖的数据监控产品
+$color-primary: #165dff;
+$color-primary-light: #4080ff;
+$color-primary-dark: #0e42d2;
+
+// 功能色
+$color-success: #00b42a;
+$color-warning: #ff7d00;
+$color-error: #f53f3f;
+$color-info: #165dff;
+
+// 情绪专属色
+$color-emotion-positive: #00b42a;
+$color-emotion-neutral: #ff7d00;
+$color-emotion-negative: #f53f3f;
+
+// 风险等级色
+$color-risk-low: #00b42a;
+$color-risk-medium: #ff7d00;
+$color-risk-high: #f53f3f;
+
+// 背景色
+$color-bg-page: #f5f6f7;
+$color-bg-card: #ffffff;
+$color-bg-hover: #f2f3f5;
+
+// 文本色
+$color-text-primary: #1d2129;
+$color-text-secondary: #4e5969;
+$color-text-tertiary: #86909c;
+$color-text-disabled: #c9cdd4;
+$color-text-white: #ffffff;
+
+// 边框色
+$color-border: #e5e6eb;
+$color-divider: #f2f3f5;
+
+// 业务标签色
+$color-tag-bg-positive: rgba(0, 180, 42, 0.1);
+$color-tag-bg-warning: rgba(255, 125, 0, 0.1);
+$color-tag-bg-negative: rgba(245, 63, 63, 0.1);
+$color-tag-bg-info: rgba(22, 93, 255, 0.1);

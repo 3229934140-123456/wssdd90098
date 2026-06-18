@@ -1,0 +1,110 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-primary;
+}
+
+.explain {
+  border-left-color: $color-info;
+}
+
+.apologize {
+  border-left-color: $color-warning;
+}
+
+.direct {
+  border-left-color: $color-success;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.typeTag {
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+}
+
+.content {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  margin-bottom: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.warning {
+  background: $color-tag-bg-negative;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+}
+
+.warningTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-emotion-negative;
+  margin-bottom: $spacing-sm;
+}
+
+.warningPhrases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.warningPhrase {
+  padding: $spacing-xs $spacing-sm;
+  background: $color-bg-card;
+  color: $color-emotion-negative;
+  font-size: $font-size-xs;
+  border-radius: $radius-sm;
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.actionBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.copyBtn {
+  background: $color-primary;
+  color: $color-text-white;
+}
+
+.useBtn {
+  background: $color-bg-hover;
+  color: $color-text-primary;
+  border: 1rpx solid $color-border;
+}
