@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, Button, RefreshControl } from '@tarojs/components';
+import { View, Text, ScrollView, Button } from '@tarojs/components';
 import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
@@ -9,6 +9,7 @@ import { CommentData, ReplyTemplate, EmotionType, AccountInfo } from '@/types';
 import { mockComments, generateReplySuggestions } from '@/data/comments';
 import { getVideosByAccount } from '@/data/videos';
 import { accountStore } from '@/store/account';
+const RefreshControl = (props: any) => null;
 
 type FilterType = 'all' | EmotionType | 'complaint' | 'praise';
 

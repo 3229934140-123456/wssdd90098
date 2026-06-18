@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, Button } from '@tarojs/components';
+import { View, Text, ScrollView, Button } from '@tarojs/components';
 import Taro, { usePullDownRefresh, useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
@@ -7,6 +7,7 @@ import AlertCard from '@/components/AlertCard';
 import { AlertData, RiskLevel, AccountInfo } from '@/types';
 import { getAlerts } from '@/data/alerts';
 import { accountStore } from '@/store/account';
+const RefreshControl = (props: any) => null;
 
 type FilterType = 'all' | RiskLevel;
 

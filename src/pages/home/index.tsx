@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Image, ScrollView, RefreshControl } from '@tarojs/components';
+import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro';
 import classNames from 'classnames';
+const RefreshControl = (props: any) => null;
 import styles from './index.module.scss';
 import VideoCard from '@/components/VideoCard';
 import { VideoData, AccountInfo, EmotionType } from '@/types';
