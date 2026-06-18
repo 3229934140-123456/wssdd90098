@@ -18,6 +18,7 @@ export const mockAccounts: AccountInfo[] = [
 export const mockVideos: VideoData[] = [
   {
     id: 'v1',
+    accountId: 'acc1',
     title: '新款旗舰手机深度测评：这次真的不一样！',
     coverUrl: 'https://picsum.photos/id/1/750/500',
     publishTime: '2026-06-18 14:30',
@@ -37,6 +38,7 @@ export const mockVideos: VideoData[] = [
   },
   {
     id: 'v2',
+    accountId: 'acc1',
     title: '千元机皇大比拼，谁才是真正的性价比之王',
     coverUrl: 'https://picsum.photos/id/2/750/500',
     publishTime: '2026-06-17 10:00',
@@ -56,6 +58,7 @@ export const mockVideos: VideoData[] = [
   },
   {
     id: 'v3',
+    accountId: 'acc1',
     title: '实测：无线耳机的音质真的不如有线吗？',
     coverUrl: 'https://picsum.photos/id/3/750/500',
     publishTime: '2026-06-16 16:45',
@@ -75,6 +78,7 @@ export const mockVideos: VideoData[] = [
   },
   {
     id: 'v4',
+    accountId: 'acc1',
     title: '智能手表续航实测：3天还是7天？',
     coverUrl: 'https://picsum.photos/id/6/750/500',
     publishTime: '2026-06-15 09:30',
@@ -94,6 +98,7 @@ export const mockVideos: VideoData[] = [
   },
   {
     id: 'v5',
+    accountId: 'acc1',
     title: '避坑指南：这些数码产品千万别买！',
     coverUrl: 'https://picsum.photos/id/8/750/500',
     publishTime: '2026-06-14 18:00',
@@ -113,66 +118,89 @@ export const mockVideos: VideoData[] = [
   },
   {
     id: 'v6',
-    title: '2026年最佳配件推荐，提升幸福感的小物件',
-    coverUrl: 'https://picsum.photos/id/9/750/500',
-    publishTime: '2026-06-13 12:00',
+    accountId: 'acc2',
+    title: '厨房神器推荐：这5件好物让做饭效率翻倍',
+    coverUrl: 'https://picsum.photos/id/292/750/500',
+    publishTime: '2026-06-18 15:00',
     viewCount: 678000,
     likeCount: 56700,
-    commentCount: 6789,
-    shareCount: 4560,
-    emotionScore: 82,
+    commentCount: 4567,
+    shareCount: 3450,
+    emotionScore: 72,
     emotionLabel: 'positive',
-    negativeGrowthRate: 3,
+    negativeGrowthRate: 4,
     controversyKeywords: ['价格'],
     emotionDistribution: {
-      positive: 70,
-      neutral: 22,
-      negative: 8
+      positive: 60,
+      neutral: 28,
+      negative: 12
     }
   },
   {
     id: 'v7',
-    title: '平板电脑选购全攻略：生产力还是爱奇艺？',
-    coverUrl: 'https://picsum.photos/id/119/750/500',
-    publishTime: '2026-06-12 15:30',
-    viewCount: 789000,
-    likeCount: 67800,
-    commentCount: 7890,
-    shareCount: 2340,
-    emotionScore: 58,
-    emotionLabel: 'neutral',
-    negativeGrowthRate: 12,
-    controversyKeywords: ['软件生态', '价格'],
+    accountId: 'acc2',
+    title: '平价护肤红黑榜：这些网红产品真的有用吗？',
+    coverUrl: 'https://picsum.photos/id/325/750/500',
+    publishTime: '2026-06-17 12:30',
+    viewCount: 987000,
+    likeCount: 78900,
+    commentCount: 9876,
+    shareCount: 5670,
+    emotionScore: 42,
+    emotionLabel: 'negative',
+    negativeGrowthRate: 52,
+    controversyKeywords: ['过敏', '没效果', '智商税'],
     emotionDistribution: {
-      positive: 45,
-      neutral: 32,
-      negative: 23
+      positive: 28,
+      neutral: 24,
+      negative: 48
     }
   },
   {
     id: 'v8',
-    title: '居家办公必备神器，效率提升200%',
-    coverUrl: 'https://picsum.photos/id/160/750/500',
-    publishTime: '2026-06-11 11:00',
-    viewCount: 567000,
-    likeCount: 45600,
-    commentCount: 4567,
-    shareCount: 3450,
-    emotionScore: 75,
+    accountId: 'acc2',
+    title: '收纳神器合集：20㎡出租屋也能住出豪宅感',
+    coverUrl: 'https://picsum.photos/id/425/750/500',
+    publishTime: '2026-06-16 14:00',
+    viewCount: 543000,
+    likeCount: 43200,
+    commentCount: 3456,
+    shareCount: 2340,
+    emotionScore: 82,
     emotionLabel: 'positive',
-    negativeGrowthRate: 6,
-    controversyKeywords: ['性价比'],
+    negativeGrowthRate: 3,
+    controversyKeywords: ['质量'],
     emotionDistribution: {
-      positive: 62,
-      neutral: 28,
+      positive: 68,
+      neutral: 22,
       negative: 10
+    }
+  },
+  {
+    id: 'v9',
+    accountId: 'acc2',
+    title: '实测网红零食：真的好吃还是营销出来的？',
+    coverUrl: 'https://picsum.photos/id/431/750/500',
+    publishTime: '2026-06-15 11:30',
+    viewCount: 765000,
+    likeCount: 54300,
+    commentCount: 6543,
+    shareCount: 3210,
+    emotionScore: 55,
+    emotionLabel: 'neutral',
+    negativeGrowthRate: 15,
+    controversyKeywords: ['口味', '价格', '分量'],
+    emotionDistribution: {
+      positive: 42,
+      neutral: 33,
+      negative: 25
     }
   }
 ];
 
 export const getVideosByAccount = (accountId: string): VideoData[] => {
   console.log('[VideoService] 获取账号视频列表:', accountId);
-  return mockVideos;
+  return mockVideos.filter(v => v.accountId === accountId);
 };
 
 export const getVideoById = (id: string): VideoData | undefined => {

@@ -4,6 +4,7 @@ export type RiskLevel = 'low' | 'medium' | 'high';
 
 export interface VideoData {
   id: string;
+  accountId: string;
   title: string;
   coverUrl: string;
   publishTime: string;
@@ -47,6 +48,7 @@ export interface ReplySuggestion {
 export interface AlertData {
   id: string;
   videoId: string;
+  accountId: string;
   videoTitle: string;
   type: 'negative_growth' | 'sensitive_keyword' | 'complaint_risk';
   level: RiskLevel;
